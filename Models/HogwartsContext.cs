@@ -43,5 +43,12 @@ namespace HogwartsPotions.Models
         {
             throw new NotImplementedException();
         }
+
+        public DbSet<HogwartsPotions.Models.Entities.Room> Rooms { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Room>().ToTable("Room");
+
+        }
     }
 }
