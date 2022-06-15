@@ -23,6 +23,7 @@ namespace HogwartsPotions
             services.AddDbContext<HogwartsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();
         }
 
