@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HogwartsPotions.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace HogwartsPotions.Models
 {
@@ -24,9 +25,10 @@ namespace HogwartsPotions.Models
             throw new NotImplementedException();
         }
 
-        public Task<List<Room>> GetAllRooms()
+        public async Task<List<Room>> GetAllRooms()
         {
-            throw new NotImplementedException();
+            Task<List<Room>> roomList = Rooms.ToListAsync();
+            return await roomList;
         }
 
         public async Task UpdateRoom(Room room)
@@ -44,10 +46,12 @@ namespace HogwartsPotions.Models
             throw new NotImplementedException();
         }
 
-        public DbSet<HogwartsPotions.Models.Entities.Room> Rooms { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Student> Students { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Room>().ToTable("Room");
+            modelBuilder.Entity<Student>().ToTable("Student");
 
         }
     }
