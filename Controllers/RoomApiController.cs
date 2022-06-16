@@ -37,9 +37,16 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpPost]
-        public async  Task AddRoom([FromBody] Room room)
+        [ValidateAntiForgeryToken]
+        public async  Task<ActionResult<Room>> AddRoom([FromBody] Room room)
         {
-            await _context.AddRoom(room);
+            if (ModelState.IsValid)
+            {
+                await _context.AddRoom(room);
+                await _context.SaveChangesAsync();
+                return CreatedAtRoute("AddRoom", room);
+            }
+            return BadRequest();
         }
 
         [HttpGet("/{id}")]
