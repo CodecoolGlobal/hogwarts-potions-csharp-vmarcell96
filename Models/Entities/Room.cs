@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,6 +11,7 @@ namespace HogwartsPotions.Models.Entities
 
         public int Capacity { get; set; }
 
+        [ValidateNever]
         public ICollection<Student> Residents { get; set; } 
     }
 }
