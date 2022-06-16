@@ -48,7 +48,7 @@ namespace HogwartsPotions.Controllers
                     await _context.AddRoom(room);
                     await _context.SaveChangesAsync();
                     //faulty butt works
-                    return CreatedAtRoute("AddRoom", room);
+                    return CreatedAtAction("AddRoom", room);
                 }
             }
             catch (DbUpdateException ex)
