@@ -22,7 +22,7 @@ namespace HogwartsPotions.Models
 
         public Task<Room> GetRoom(long roomId)
         {
-            throw new NotImplementedException();
+            return Rooms.FirstAsync(m => m.ID == roomId);
         }
 
         public async Task<List<Room>> GetAllRooms()
