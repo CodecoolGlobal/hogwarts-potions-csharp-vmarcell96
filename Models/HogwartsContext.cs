@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HogwartsPotions.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using HogwartsPotions.Models.Enums;
 
 namespace HogwartsPotions.Models
 {
@@ -38,19 +39,21 @@ namespace HogwartsPotions.Models
             {
                 roomToUpdate.Residents = room.Residents;
             }
-            room.ID = id;
-            //await Rooms.RemoveAsync
-            
+            room.ID = id;  
         }
 
         public async Task DeleteRoom(long id)
         {
-            throw new NotImplementedException();
+            var roomToDelete = await Rooms.FirstAsync(m => m.ID == id);
+            Rooms.Remove(roomToDelete);
         }
 
-        public Task<List<Room>> GetRoomsForRatOwners()
+        public async Task<List<Room>> GetRoomsForRatOwners()
         {
-            throw new NotImplementedException();
+            return await Rooms.Include(room => room.Residents)
+                              .AsNoTracking()
+                              .Where(r => !r.Residents.Any(stu => stu.PetType == PetType.Cat || stu.PetType == PetType.Owl))
+                              .ToListAsync();
         }
 
         public DbSet<Room> Rooms { get; set; }
