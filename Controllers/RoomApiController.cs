@@ -30,7 +30,7 @@ namespace HogwartsPotions.Controllers
             catch (Exception ex)
             {
                 _logger.LogCritical(
-                    $"Exception while getting the list of partners.", ex);
+                    $"Exception while getting the list of rooms.", ex);
                 return StatusCode(500, "A problem happened while handling your request.");
             }
             
@@ -43,20 +43,21 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpGet("/{id}")]
-        public async Task<Room> GetRoomById(long id)
+        public async Task<ActionResult<Room>> GetRoomById(long id)
         {
-            if (id == null || _context.Rooms == null)
+            if (id == null || await _context.GetAllRooms() == null)
             {
                 return NotFound();
             }
 
-            var room = await _context.Rooms
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var room = await _context.GetRoom(id);
+
             if (room == null)
             {
                 return NotFound();
             }
-            return await _context.GetRoom(id);
+
+            return room;
         }
 
         [HttpPut("/{id}")]
