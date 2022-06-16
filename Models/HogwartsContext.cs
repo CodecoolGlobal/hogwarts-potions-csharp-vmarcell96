@@ -20,20 +20,27 @@ namespace HogwartsPotions.Models
             await Rooms.AddAsync(room);
         }
 
-        public Task<Room> GetRoom(long roomId)
+        public async Task<Room> GetRoom(long roomId)
         {
-            return Rooms.FirstAsync(m => m.ID == roomId);
+            return await Rooms.Include(room => room.Residents).AsNoTracking().FirstAsync(m => m.ID == roomId);
         }
 
         public async Task<List<Room>> GetAllRooms()
         {
-            Task<List<Room>> roomList = Rooms.ToListAsync();
-            return await roomList;
+            return await Rooms.Include(room => room.Residents).AsNoTracking().ToListAsync();
         }
 
-        public async Task UpdateRoom(Room room)
+        public async Task UpdateRoom(long id, Room room)
         {
-            throw new NotImplementedException();
+            var roomToUpdate = await Rooms.FirstAsync(m => m.ID == id);
+            roomToUpdate.Capacity = room.Capacity;
+            if (room.Residents.Count > 0)
+            {
+                roomToUpdate.Residents = room.Residents;
+            }
+            room.ID = id;
+            //await Rooms.RemoveAsync
+            
         }
 
         public async Task DeleteRoom(long id)

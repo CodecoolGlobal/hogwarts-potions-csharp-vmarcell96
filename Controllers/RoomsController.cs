@@ -25,7 +25,7 @@ namespace HogwartsPotions.Controllers
               return View(await _context.Rooms.ToListAsync());
         }
 
-        // GET: Rooms/Details/5
+        [HttpGet("details/{id}")]
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null || _context.Rooms == null)
@@ -33,8 +33,8 @@ namespace HogwartsPotions.Controllers
                 return NotFound();
             }
 
-            var room = await _context.Rooms
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var room = await _context.Rooms.Include(room => room.Residents).AsNoTracking().FirstAsync(m => m.ID == id);
+
             if (room == null)
             {
                 return NotFound();

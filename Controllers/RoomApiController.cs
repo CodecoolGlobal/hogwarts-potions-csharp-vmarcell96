@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using HogwartsPotions.Models;
 using HogwartsPotions.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace HogwartsPotions.Controllers
 {
-    [ApiController, Route("/room")]
+    [ApiController, Route("rooms")]
     public class RoomApiController : ControllerBase
     {
         private readonly HogwartsContext _context;
@@ -37,19 +38,28 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async  Task<ActionResult<Room>> AddRoom([FromBody] Room room)
+        [ActionName(nameof(AddRoom))]
+        public async Task<ActionResult<Room>> AddRoom([FromBody] Room room)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await _context.AddRoom(room);
-                await _context.SaveChangesAsync();
-                return CreatedAtRoute("AddRoom", room);
+                if (ModelState.IsValid)
+                {
+                    await _context.AddRoom(room);
+                    await _context.SaveChangesAsync();
+                    //faulty butt works
+                    return CreatedAtRoute("AddRoom", room);
+                }
             }
-            return BadRequest();
+            catch (DbUpdateException ex)
+            {
+                _logger.LogCritical(
+                    $"Exception while adding room.", ex);
+            }
+            return NotFound();
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Room>> GetRoomById(long id)
         {
             if (id == null || await _context.GetAllRooms() == null)
@@ -64,22 +74,28 @@ namespace HogwartsPotions.Controllers
                 return NotFound();
             }
 
-            return room;
+            return Ok(room);
         }
 
-        [HttpPut("/{id}")]
-        public void UpdateRoomById(long id, [FromBody] Room updatedRoom)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateRoomById(long id, [FromBody] Room updatedRoom)
         {
-            _context.Update(updatedRoom);
+            var roomToUpdate = await _context.GetRoom(id);
+            if (roomToUpdate == null)
+            {
+                return NotFound();
+            }
+            await _context.UpdateRoom(id, updatedRoom);
+            return NoContent();
         }
 
-        [HttpDelete("/{id}")]
+        [HttpDelete("{id}")]
         public async Task DeleteRoomById(long id)
         {
             await _context.DeleteRoom(id);
         }
 
-        [HttpGet("/rat-owners")]
+        [HttpGet("rat-owners")]
         public async Task<List<Room>> GetRoomsForRatOwners()
         {
             return await _context.GetRoomsForRatOwners();
