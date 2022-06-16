@@ -39,7 +39,7 @@ namespace HogwartsPotions.Controllers
 
         [HttpPost]
         [ActionName(nameof(AddRoom))]
-        public async Task<ActionResult<Room>> AddRoom([FromBody] Room room)
+        public async Task<ActionResult<Room>> AddRoom([Bind("Capacity, Residents")] Room room)
         {
             try
             {
@@ -78,27 +78,46 @@ namespace HogwartsPotions.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateRoomById(long id, [FromBody] Room updatedRoom)
+        public async Task<ActionResult> UpdateRoomById(long id, [Bind("Capacity, Residents")] Room updatedRoom)
         {
             var roomToUpdate = await _context.GetRoom(id);
             if (roomToUpdate == null)
             {
                 return NotFound();
             }
-            await _context.UpdateRoom(id, updatedRoom);
+            updatedRoom.ID = roomToUpdate.ID;
+            _context.Update(updatedRoom);
+            //await _context.UpdateRoom(id, updatedRoom);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteRoomById(long id)
+        public async Task<ActionResult> DeleteRoomById(long id)
         {
-            await _context.DeleteRoom(id);
+            var room = await _context.GetRoom(id);
+            if (room == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                await _context.DeleteRoom(id);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogCritical(
+                    $"Exception while deleting room.", ex);
+            }
+            return NoContent();
         }
 
         [HttpGet("rat-owners")]
-        public async Task<List<Room>> GetRoomsForRatOwners()
+        public async Task<ActionResult<List<Room>>> GetRoomsForRatOwners()
         {
-            return await _context.GetRoomsForRatOwners();
+            return Ok(await _context.GetRoomsForRatOwners());
         }
     }
 }
