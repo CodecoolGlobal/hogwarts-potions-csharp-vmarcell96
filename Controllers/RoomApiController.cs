@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HogwartsPotions.Models;
 using HogwartsPotions.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace HogwartsPotions.Controllers
 {
@@ -10,16 +12,28 @@ namespace HogwartsPotions.Controllers
     public class RoomApiController : ControllerBase
     {
         private readonly HogwartsContext _context;
+        private readonly ILogger<RoomApiController> _logger;
 
-        public RoomApiController(HogwartsContext context)
+        public RoomApiController(HogwartsContext context, ILogger<RoomApiController> logger)
         {
             _context = context;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
-        public async Task<List<Room>> GetAllRooms()
+        public async Task<ActionResult<List<Room>>> GetAllRooms()
         {
-            return await _context.GetAllRooms();
+            try
+            {
+                return Ok(await _context.GetAllRooms());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(
+                    $"Exception while getting the list of partners.", ex);
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+            
         }
 
         [HttpPost]
@@ -31,6 +45,17 @@ namespace HogwartsPotions.Controllers
         [HttpGet("/{id}")]
         public async Task<Room> GetRoomById(long id)
         {
+            if (id == null || _context.Rooms == null)
+            {
+                return NotFound();
+            }
+
+            var room = await _context.Rooms
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (room == null)
+            {
+                return NotFound();
+            }
             return await _context.GetRoom(id);
         }
 
