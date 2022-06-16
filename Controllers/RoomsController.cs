@@ -22,18 +22,18 @@ namespace HogwartsPotions.Controllers
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Room.ToListAsync());
+              return View(await _context.Rooms.ToListAsync());
         }
 
         // GET: Rooms/Details/5
         public async Task<IActionResult> Details(long? id)
         {
-            if (id == null || _context.Room == null)
+            if (id == null || _context.Rooms == null)
             {
                 return NotFound();
             }
 
-            var room = await _context.Room
+            var room = await _context.Rooms
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (room == null)
             {
@@ -68,12 +68,12 @@ namespace HogwartsPotions.Controllers
         // GET: Rooms/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
-            if (id == null || _context.Room == null)
+            if (id == null || _context.Rooms == null)
             {
                 return NotFound();
             }
 
-            var room = await _context.Room.FindAsync(id);
+            var room = await _context.Rooms.FindAsync(id);
             if (room == null)
             {
                 return NotFound();
@@ -119,12 +119,12 @@ namespace HogwartsPotions.Controllers
         // GET: Rooms/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
-            if (id == null || _context.Room == null)
+            if (id == null || _context.Rooms == null)
             {
                 return NotFound();
             }
 
-            var room = await _context.Room
+            var room = await _context.Rooms
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (room == null)
             {
@@ -139,14 +139,14 @@ namespace HogwartsPotions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            if (_context.Room == null)
+            if (_context.Rooms == null)
             {
                 return Problem("Entity set 'HogwartsContext.Room'  is null.");
             }
-            var room = await _context.Room.FindAsync(id);
+            var room = await _context.Rooms.FindAsync(id);
             if (room != null)
             {
-                _context.Room.Remove(room);
+                _context.Rooms.Remove(room);
             }
             
             await _context.SaveChangesAsync();
@@ -155,7 +155,7 @@ namespace HogwartsPotions.Controllers
 
         private bool RoomExists(long id)
         {
-          return _context.Room.Any(e => e.ID == id);
+          return _context.Rooms.Any(e => e.ID == id);
         }
     }
 }
