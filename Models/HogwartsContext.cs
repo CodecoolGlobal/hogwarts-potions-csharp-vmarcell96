@@ -17,7 +17,7 @@ namespace HogwartsPotions.Models
 
         public async Task AddRoom(Room room)
         {
-            throw new NotImplementedException();
+            await Rooms.AddAsync(room);
         }
 
         public Task<Room> GetRoom(long roomId)
