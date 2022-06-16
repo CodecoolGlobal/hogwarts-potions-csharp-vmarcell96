@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HogwartsPotions.Models;
 using HogwartsPotions.Models.Entities;
+using HogwartsPotions.Models.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,12 +13,12 @@ namespace HogwartsPotions.Controllers
     [ApiController, Route("rooms")]
     public class RoomApiController : ControllerBase
     {
-        private readonly HogwartsContext _context;
+        private readonly IRoomRepository _roomRepository;
         private readonly ILogger<RoomApiController> _logger;
 
-        public RoomApiController(HogwartsContext context, ILogger<RoomApiController> logger)
+        public RoomApiController(HogwartsContext context, ILogger<RoomApiController> logger, IRoomRepository roomRepository)
         {
-            _context = context;
+            _roomRepository = roomRepository;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -26,7 +27,7 @@ namespace HogwartsPotions.Controllers
         {
             try
             {
-                return Ok(await _context.GetAllRooms());
+                return Ok(await _roomRepository.GetAllRooms());
             }
             catch (Exception ex)
             {
@@ -45,9 +46,7 @@ namespace HogwartsPotions.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _context.AddRoom(room);
-                    await _context.SaveChangesAsync();
-                    //faulty butt works
+                    await _roomRepository.AddRoom(room);
                     return CreatedAtAction("AddRoom", room);
                 }
             }
@@ -62,48 +61,39 @@ namespace HogwartsPotions.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Room>> GetRoomById(long id)
         {
-            if (id == null || await _context.GetAllRooms() == null)
-            {
-                return NotFound();
-            }
-
-            var room = await _context.GetRoom(id);
+            var room = await _roomRepository.GetRoom(id);
 
             if (room == null)
             {
                 return NotFound();
             }
-
             return Ok(room);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateRoomById(long id, [Bind("Capacity, Residents")] Room updatedRoom)
         {
-            var roomToUpdate = await _context.GetRoom(id);
+            var roomToUpdate = await _roomRepository.GetRoom(id);
             if (roomToUpdate == null)
             {
                 return NotFound();
             }
             updatedRoom.ID = roomToUpdate.ID;
-            _context.Update(updatedRoom);
-            //await _context.UpdateRoom(id, updatedRoom);
-            await _context.SaveChangesAsync();
+            _roomRepository.UpdateRoom(updatedRoom);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRoomById(long id)
         {
-            var room = await _context.GetRoom(id);
+            var room = await _roomRepository.GetRoom(id);
             if (room == null)
             {
                 return NotFound();
             }
             try
             {
-                await _context.DeleteRoom(id);
-                await _context.SaveChangesAsync();
+                await _roomRepository.DeleteRoom(id);
                 return NoContent();
             }
             catch (DbUpdateException ex)
@@ -117,7 +107,7 @@ namespace HogwartsPotions.Controllers
         [HttpGet("rat-owners")]
         public async Task<ActionResult<List<Room>>> GetRoomsForRatOwners()
         {
-            return Ok(await _context.GetRoomsForRatOwners());
+            return Ok(await _roomRepository.GetRoomsForRatOwners());
         }
     }
 }
