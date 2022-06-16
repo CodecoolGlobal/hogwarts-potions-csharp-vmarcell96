@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace HogwartsPotions.Controllers
 {
     [ApiController, Route("/room")]
-    public class RoomController : ControllerBase
+    public class RoomApiController : ControllerBase
     {
         private readonly HogwartsContext _context;
 
-        public RoomController(HogwartsContext context)
+        public RoomApiController(HogwartsContext context)
         {
             _context = context;
         }
