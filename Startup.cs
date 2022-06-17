@@ -1,10 +1,13 @@
 using HogwartsPotions.Models;
+using HogwartsPotions.Models.Interfaces;
+using HogwartsPotions.Models.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace HogwartsPotions
 {
@@ -24,14 +27,24 @@ namespace HogwartsPotions
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            services.AddScoped<IRoomRepository, RoomRepository>();
+            services.AddScoped<IPotionRepository, PotionRepository>();
+            services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IRecipeRepository, RecipeRepository>();
+            services.AddScoped<IIngredientRepository, IngredientRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, HogwartsContext context)
         {
             if (env.IsDevelopment())
             {
+                if (!context.Database.EnsureCreated())
+                {
+                    context.Database.Migrate();
+                }
                 app.UseDeveloperExceptionPage();
             }
             else
