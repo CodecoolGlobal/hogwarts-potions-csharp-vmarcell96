@@ -54,7 +54,7 @@ namespace HogwartsPotions.Models.Repositories
         public async Task<List<Potion>> GetAllPotionsCreatedByStudent(long studentId)
         {
             return await Context.Potions
-                            .Include(potion => potion.Brewer)
+                            .Include(potion => potion.Brewer).ThenInclude(s => s.Room)
                             .Include(potion => potion.Ingredients)
                             .Include(potion => potion.Recipe)
                             .Where(potion => potion.Brewer.ID == studentId)
@@ -73,7 +73,7 @@ namespace HogwartsPotions.Models.Repositories
         public async Task<Potion> AddIngredientToPotion(long potionId, Ingredient ingred)
         {
             var potion = await GetPotionById(potionId);
-            if (potion != null)
+            if (potion != null && potion.Ingredients.Count < 5)
             {
                 foreach (var ingredient in potion.Ingredients)
                 {
