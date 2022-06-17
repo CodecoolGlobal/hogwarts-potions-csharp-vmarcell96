@@ -16,9 +16,11 @@ namespace HogwartsPotions.Models.Repositories
             Context = context;
         }
 
-        public Task<List<Ingredient>> GetAllIngredients()
+        public async Task<List<Ingredient>> GetAllIngredients()
         {
-            throw new System.NotImplementedException();
+            return await Context.Ingredients
+                            .AsNoTracking()
+                            .ToListAsync();
         }
 
         public Task DeleteIngredient(long id)
@@ -31,9 +33,10 @@ namespace HogwartsPotions.Models.Repositories
             throw new System.NotImplementedException();
         }
 
-        public Task AddIngredient(Ingredient ingredient)
+        public async Task AddIngredient(Ingredient ingredient)
         {
-            throw new System.NotImplementedException();
+            await Context.Ingredients.AddAsync(ingredient);
+            await Context.SaveChangesAsync();
         }
     }
 }

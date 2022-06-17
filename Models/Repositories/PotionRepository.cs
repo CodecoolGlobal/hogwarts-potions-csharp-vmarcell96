@@ -26,7 +26,7 @@ namespace HogwartsPotions.Models.Repositories
                             .ToListAsync();
         }
 
-        public async Task<Potion> GetPotion(long potionId)
+        public async Task<Potion> GetPotionById(long potionId)
         {
             return await Context.Potions
                 .Include(p => p.Ingredients)
@@ -37,7 +37,7 @@ namespace HogwartsPotions.Models.Repositories
 
         public async Task DeletePotion(long id)
         {
-            var potion = await GetPotion(id);
+            var potion = await GetPotionById(id);
             if (potion != null)
             {
                 Context.Potions.Remove(potion);
@@ -68,6 +68,23 @@ namespace HogwartsPotions.Models.Repositories
             await Context.Potions.AddAsync(potion);
             await Context.SaveChangesAsync();
             return potion;
+        }
+
+        public async Task AddIngredientToPotion(long potionId, Ingredient ingred)
+        {
+            var potion = await GetPotionById(potionId);
+            if (potion != null)
+            {
+                foreach (var ingredient in potion.Ingredients)
+                {
+                    if (ingredient.Name == ingred.Name)
+                    {
+                        return;
+                    }
+                }
+                potion.Ingredients.Add(ingred);
+                await Context.SaveChangesAsync();
+            }
         }
 
     }
