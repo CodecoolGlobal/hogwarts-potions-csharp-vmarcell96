@@ -26,6 +26,7 @@ namespace HogwartsPotions.Models.Repositories
             var roomToDelete = await Context.Rooms.FirstAsync(m => m.ID == id);
             if (roomToDelete != null)
             {
+                Context.Students.Where(s => s.Room == roomToDelete).Load();
                 Context.Rooms.Remove(roomToDelete);
                 await Context.SaveChangesAsync();
             }
