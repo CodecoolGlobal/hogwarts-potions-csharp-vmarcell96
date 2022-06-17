@@ -14,10 +14,12 @@ namespace HogwartsPotions.Controllers
     public class RoomApiController : ControllerBase
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly IStudentRepository _studentRepository;
         private readonly ILogger<RoomApiController> _logger;
 
-        public RoomApiController(HogwartsContext context, ILogger<RoomApiController> logger, IRoomRepository roomRepository)
+        public RoomApiController(ILogger<RoomApiController> logger, IRoomRepository roomRepository, IStudentRepository studentRepository)
         {
+            _studentRepository = studentRepository;
             _roomRepository = roomRepository;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -93,6 +95,7 @@ namespace HogwartsPotions.Controllers
             }
             try
             {
+                //await _studentRepository.EvictStudentsFromRoom(room);
                 await _roomRepository.DeleteRoom(id);
                 return NoContent();
             }
