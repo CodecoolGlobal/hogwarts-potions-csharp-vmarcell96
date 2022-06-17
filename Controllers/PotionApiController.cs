@@ -123,78 +123,107 @@ namespace HogwartsPotions.Controllers
 
         }
 
-        //[HttpPut("{potionId:long}/add-ingredient")]
-        //public async Task<Potion> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)
-        //{
-        //    var potion = await _potionRepository.GetPotion(potionId);
+        [HttpPut("{potionId}/add")]
+        public async Task<ActionResult> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)
+        {
+            //try
+            //{
+                var persistedIngredients = await _ingredientRepository.GetAllIngredients();
+                foreach (var ingred in persistedIngredients)
+                {
+                    if (ingred.Name == ingredient.Name)
+                    {
+                        await _potionRepository.AddIngredientToPotion(potionId, ingred);
+                        return NoContent();
+                    }
+                }
+                await _ingredientRepository.AddIngredient(ingredient);
+                await _potionRepository.AddIngredientToPotion(potionId, ingredient);
+                return Ok();
+            //}
+                
+            //catch (Exception ex)
+            //{
+            //    _logger.LogCritical(
+            //        $"Exception while adding ingredient.", ex);
+            //    return StatusCode(500, "A problem happened while handling your request.");
+            //}
 
-        //    _ingredientRepository.AddIngredient(ingredient);
-        //    await _potionRepository.ModifyPotion(potion, ingredient);
+        }
+        
 
-        //    return await Task.Run(() => potion);
-        //}
+    //[HttpPut("{potionId:long}/add-ingredient")]
+    //public async Task<Potion> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)
+    //{
+    //    var potion = await _potionRepository.GetPotion(potionId);
 
-        //[HttpPut("{potionId:long}/add-ingredient/{ingredientId:long}")]
-        //public async Task<Potion> AddIngredientToPotion(long potionId, long ingredientId)
-        //{
-        //    var potion = await _potionRepository.GetPotion(potionId);
-        //    var ingredient = await _ingredientRepository.GetIngredient(ingredientId);
+    //    _ingredientRepository.AddIngredient(ingredient);
+    //    await _potionRepository.ModifyPotion(potion, ingredient);
 
-        //    await _potionRepository.ModifyPotion(potion, ingredient);
+    //    return await Task.Run(() => potion);
+    //}
 
-        //    return await Task.Run(() => potion);
-        //}
+    //[HttpPut("{potionId:long}/add-ingredient/{ingredientId:long}")]
+    //public async Task<Potion> AddIngredientToPotion(long potionId, long ingredientId)
+    //{
+    //    var potion = await _potionRepository.GetPotion(potionId);
+    //    var ingredient = await _ingredientRepository.GetIngredient(ingredientId);
 
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Room>> GetRoomById(long id)
-        //{
-        //    var room = await _potionRepository.GetRoom(id);
+    //    await _potionRepository.ModifyPotion(potion, ingredient);
 
-        //    if (room == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(room);
-        //}
+    //    return await Task.Run(() => potion);
+    //}
 
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult> UpdateRoomById(long id, [Bind("Capacity, Residents")] Room updatedRoom)
-        //{
-        //    var roomToUpdate = await _potionRepository.GetRoom(id);
-        //    if (roomToUpdate == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    updatedRoom.ID = roomToUpdate.ID;
-        //    _potionRepository.UpdateRoom(updatedRoom);
-        //    return NoContent();
-        //}
+    //[HttpGet("{id}")]
+    //public async Task<ActionResult<Room>> GetRoomById(long id)
+    //{
+    //    var room = await _potionRepository.GetRoom(id);
 
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult> DeleteRoomById(long id)
-        //{
-        //    var room = await _potionRepository.GetRoom(id);
-        //    if (room == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    try
-        //    {
-        //        await _potionRepository.DeleteRoom(id);
-        //        return NoContent();
-        //    }
-        //    catch (DbUpdateException ex)
-        //    {
-        //        _logger.LogCritical(
-        //            $"Exception while deleting room.", ex);
-        //    }
-        //    return NoContent();
-        //}
+    //    if (room == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    return Ok(room);
+    //}
 
-        //[HttpGet("rat-owners")]
-        //public async Task<ActionResult<List<Room>>> GetRoomsForRatOwners()
-        //{
-        //    return Ok(await _potionRepository.GetRoomsForRatOwners());
-        //}
-    }
+    //[HttpPut("{id}")]
+    //public async Task<ActionResult> UpdateRoomById(long id, [Bind("Capacity, Residents")] Room updatedRoom)
+    //{
+    //    var roomToUpdate = await _potionRepository.GetRoom(id);
+    //    if (roomToUpdate == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    updatedRoom.ID = roomToUpdate.ID;
+    //    _potionRepository.UpdateRoom(updatedRoom);
+    //    return NoContent();
+    //}
+
+    //[HttpDelete("{id}")]
+    //public async Task<ActionResult> DeleteRoomById(long id)
+    //{
+    //    var room = await _potionRepository.GetRoom(id);
+    //    if (room == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    try
+    //    {
+    //        await _potionRepository.DeleteRoom(id);
+    //        return NoContent();
+    //    }
+    //    catch (DbUpdateException ex)
+    //    {
+    //        _logger.LogCritical(
+    //            $"Exception while deleting room.", ex);
+    //    }
+    //    return NoContent();
+    //}
+
+    //[HttpGet("rat-owners")]
+    //public async Task<ActionResult<List<Room>>> GetRoomsForRatOwners()
+    //{
+    //    return Ok(await _potionRepository.GetRoomsForRatOwners());
+    //}
+}
 }
