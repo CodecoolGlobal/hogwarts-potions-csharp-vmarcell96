@@ -61,6 +61,14 @@ namespace HogwartsPotions.Models.Repositories
                             .AsNoTracking()
                             .ToListAsync();
         }
-        
+
+        public async Task<Potion> AddEmptyPotion(Student student)
+        {
+            var potion = new Potion() { Brewer=student, Status=BrewingStatus.Brew };
+            await Context.Potions.AddAsync(potion);
+            await Context.SaveChangesAsync();
+            return potion;
+        }
+
     }
 }

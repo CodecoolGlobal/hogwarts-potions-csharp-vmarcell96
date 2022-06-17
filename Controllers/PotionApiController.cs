@@ -105,6 +105,24 @@ namespace HogwartsPotions.Controllers
 
         }
 
+        [HttpPost("brew/{studentId:long}")]
+        public async Task<ActionResult<List<Potion>>> BrewPotion(long studentId)
+        {
+            try
+            {
+                var student = await _studentRepository.GetStudentById(studentId);
+                var potion = await _potionRepository.AddEmptyPotion(student);
+                return CreatedAtAction("BrewPotion", potion);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(
+                    $"Exception while getting the list of potions created by student: {studentId}.", ex);
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+
+        }
+
         //[HttpPut("{potionId:long}/add-ingredient")]
         //public async Task<Potion> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)
         //{
