@@ -15,6 +15,7 @@ namespace HogwartsPotions.Models
         public DbSet<Student> Students { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Potion> Potions { get; set; }
 
         public HogwartsContext(DbContextOptions<HogwartsContext> options) : base(options)
         {
@@ -27,7 +28,13 @@ namespace HogwartsPotions.Models
             modelBuilder.Entity<Student>().ToTable("Student");
             modelBuilder.Entity<Ingredient>().ToTable("Ingredient");
             modelBuilder.Entity<Recipe>().ToTable("Recipe");
+            modelBuilder.Entity<Potion>().ToTable("Potion");
 
+            //modelBuilder.Entity<Room>()
+            //    .HasMany(r => r.Residents)
+            //    .WithOne(d => d)
+            //    .HasForeignKey<UserLoginData>(d => d.StudentId)
+            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
