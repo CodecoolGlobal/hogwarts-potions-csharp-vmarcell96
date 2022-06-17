@@ -128,26 +128,40 @@ namespace HogwartsPotions.Controllers
         {
             try
             {
+                var potion = await _potionRepository.GetPotionById(potionId);   
+
+                if (potion.Ingredients.Count == 5)
+                {
+                    return StatusCode(500, $"The potion is already finished.");
+                }
+
                 var persistedIngredients = await _ingredientRepository.GetAllIngredients();
                 foreach (var ingred in persistedIngredients)
                 {
                     if (ingred.Name == ingredient.Name)
                     {
                         await _potionRepository.AddIngredientToPotion(potionId, ingred);
-                        return NoContent();
+                        if (potion.Ingredients.Count == 5)
+                        {
+                            await _recipeRepository.ChangePotionStatus(potion);
+                        }
+                        return Ok(potion);
                     }
                 }
                 await _ingredientRepository.AddIngredient(ingredient);
-                return Ok(await _potionRepository.AddIngredientToPotion(potionId, ingredient));
+                await _potionRepository.AddIngredientToPotion(potionId, ingredient);
+                if (potion.Ingredients.Count == 5)
+                {
+                    await _recipeRepository.ChangePotionStatus(potion);
+                }
+                return Ok(potion);
             }
-
             catch (Exception ex)
             {
                 _logger.LogCritical(
                     $"Exception while adding ingredient.", ex);
                 return StatusCode(500, "A problem happened while handling your request.");
             }
-
         }
 
         [HttpGet("{potionId:long}/help")]
@@ -155,7 +169,12 @@ namespace HogwartsPotions.Controllers
         {
             try
             {
-                return Ok(await _recipeRepository.GetAllRecipesWithPotionIngredients(potionId));
+                var potion = await _recipeRepository.GetAllRecipesWithPotionIngredients(potionId);
+                if (potion == null)
+                {
+                    return StatusCode(500, $"The potion is ready or there is no potion with this id:{potionId}");
+                }
+                return Ok(potion);
             }
             catch (Exception ex)
             {
@@ -163,82 +182,6 @@ namespace HogwartsPotions.Controllers
                     $"Exception while getting all recipes which contain ingredients in potion.", ex);
                 return StatusCode(500, "A problem happened while handling your request.");
             }
-
         }
-
-
-        //[HttpPut("{potionId:long}/add-ingredient")]
-        //public async Task<Potion> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)
-        //{
-        //    var potion = await _potionRepository.GetPotion(potionId);
-
-        //    _ingredientRepository.AddIngredient(ingredient);
-        //    await _potionRepository.ModifyPotion(potion, ingredient);
-
-        //    return await Task.Run(() => potion);
-        //}
-
-        //[HttpPut("{potionId:long}/add-ingredient/{ingredientId:long}")]
-        //public async Task<Potion> AddIngredientToPotion(long potionId, long ingredientId)
-        //{
-        //    var potion = await _potionRepository.GetPotion(potionId);
-        //    var ingredient = await _ingredientRepository.GetIngredient(ingredientId);
-
-        //    await _potionRepository.ModifyPotion(potion, ingredient);
-
-        //    return await Task.Run(() => potion);
-        //}
-
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Room>> GetRoomById(long id)
-        //{
-        //    var room = await _potionRepository.GetRoom(id);
-
-        //    if (room == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(room);
-        //}
-
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult> UpdateRoomById(long id, [Bind("Capacity, Residents")] Room updatedRoom)
-        //{
-        //    var roomToUpdate = await _potionRepository.GetRoom(id);
-        //    if (roomToUpdate == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    updatedRoom.ID = roomToUpdate.ID;
-        //    _potionRepository.UpdateRoom(updatedRoom);
-        //    return NoContent();
-        //}
-
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult> DeleteRoomById(long id)
-        //{
-        //    var room = await _potionRepository.GetRoom(id);
-        //    if (room == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    try
-        //    {
-        //        await _potionRepository.DeleteRoom(id);
-        //        return NoContent();
-        //    }
-        //    catch (DbUpdateException ex)
-        //    {
-        //        _logger.LogCritical(
-        //            $"Exception while deleting room.", ex);
-        //    }
-        //    return NoContent();
-        //}
-
-        //[HttpGet("rat-owners")]
-        //public async Task<ActionResult<List<Room>>> GetRoomsForRatOwners()
-        //{
-        //    return Ok(await _potionRepository.GetRoomsForRatOwners());
-        //}
     }
 }
