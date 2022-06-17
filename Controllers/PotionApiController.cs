@@ -150,6 +150,22 @@ namespace HogwartsPotions.Controllers
 
         }
 
+        [HttpGet("{potionId:long}/help")]
+        public async Task<ActionResult<List<Recipe>>> GetAllRecipesWithPotionIngredients(long potionId)
+        {
+            try
+            {
+                return Ok(await _recipeRepository.GetAllRecipesWithPotionIngredients(potionId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(
+                    $"Exception while getting all recipes which contain ingredients in potion.", ex);
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+
+        }
+
 
         //[HttpPut("{potionId:long}/add-ingredient")]
         //public async Task<Potion> AddIngredientToPotion(long potionId, [FromBody] Ingredient ingredient)

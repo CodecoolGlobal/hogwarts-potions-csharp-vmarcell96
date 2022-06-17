@@ -19,8 +19,8 @@ namespace HogwartsPotions.Models.Repositories
         public async Task<List<Recipe>> GetAllRecipes()
         {
             return await Context.Recipes
-                                .Include(potion => potion.Brewer)
-                                .Include(potion => potion.Ingredients)
+                                .Include(recipe => recipe.Brewer)
+                                .Include(recipe => recipe.Ingredients)
                                 .AsNoTracking()
                                 .ToListAsync();
         }
@@ -41,17 +41,16 @@ namespace HogwartsPotions.Models.Repositories
             await Context.SaveChangesAsync();
         }
 
-        //public async Task<bool> CheckIfRecipeAlreadyExists(Potion potion)
-        //{
-        //    var recipes = await GetAllRecipes();
-        //    foreach (var recipe in recipes)
-        //    {
-        //        if (pot.Ingredients == potion.Ingredients)
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
+        public async Task<List<Recipe>> GetAllRecipesWithPotionIngredients(long potionId)
+        {
+            var potion = await Context.Potions.Include(potion => potion.Ingredients).FirstAsync(potion => potion.ID == potionId);
+            return await Context.Recipes
+                .Include(recipe => recipe.Brewer)
+                .Include(recipe => recipe.Ingredients)
+                .Where(recipe => recipe.Ingredients.Any(ingredient => potion.Ingredients.Contains(ingredient)))
+                .AsNoTracking()
+                .ToListAsync();  
+        }
+
     }
 }
