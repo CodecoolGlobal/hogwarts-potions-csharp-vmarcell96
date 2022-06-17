@@ -52,5 +52,23 @@ namespace HogwartsPotions.Models.Repositories
                 .ToListAsync();  
         }
 
+        public async Task ChangePotionStatus(Potion potion)
+        {
+            var recipes = await GetAllRecipes();
+            foreach (var recipe in recipes)
+            {
+                if (recipe == potion.Ingredients)
+                {
+                    potion.Status = BrewingStatus.Replica;
+                    potion.Recipe = recipe;
+                    await Context.SaveChangesAsync();
+                }
+            }
+            potion.Status = BrewingStatus.Discovery;
+            var newRecipe = new Recipe() { Brewer=potion.Brewer, Ingredients=potion.Ingredients, Name=$"{potion.Brewer.Name}'s discovery" };
+            await AddRecipe(newRecipe);
+            potion.Recipe = newRecipe;
+            await Context.SaveChangesAsync();
+        }
     }
 }

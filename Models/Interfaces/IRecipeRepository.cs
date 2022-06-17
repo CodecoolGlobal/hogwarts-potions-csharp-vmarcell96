@@ -12,6 +12,9 @@ public interface IRecipeRepository
 
     public Task AddRecipe(Recipe recipe);
     public Task<List<Recipe>> GetAllRecipesWithPotionIngredients(long potionId);
+    public Task ChangePotionStatus(Potion potion);
     
+
+
 
 }
