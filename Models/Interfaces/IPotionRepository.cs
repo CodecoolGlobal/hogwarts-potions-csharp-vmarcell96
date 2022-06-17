@@ -11,5 +11,6 @@ public interface IPotionRepository
     public Task<Potion> GetPotion(long potionId);
 
     public Task AddPotion(Potion potion);
+    public Task<List<Potion>> GetAllPotionsCreatedByStudent(long studentId);
 
 }

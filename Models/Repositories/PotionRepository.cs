@@ -51,5 +51,16 @@ namespace HogwartsPotions.Models.Repositories
             await Context.SaveChangesAsync();
         }
 
+        public async Task<List<Potion>> GetAllPotionsCreatedByStudent(long studentId)
+        {
+            return await Context.Potions
+                            .Include(potion => potion.Brewer)
+                            .Include(potion => potion.Ingredients)
+                            .Include(potion => potion.Recipe)
+                            .Where(potion => potion.Brewer.ID == studentId)
+                            .AsNoTracking()
+                            .ToListAsync();
+        }
+        
     }
 }
