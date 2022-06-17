@@ -70,7 +70,7 @@ namespace HogwartsPotions.Models.Repositories
             return potion;
         }
 
-        public async Task AddIngredientToPotion(long potionId, Ingredient ingred)
+        public async Task<Potion> AddIngredientToPotion(long potionId, Ingredient ingred)
         {
             var potion = await GetPotionById(potionId);
             if (potion != null)
@@ -79,12 +79,14 @@ namespace HogwartsPotions.Models.Repositories
                 {
                     if (ingredient.Name == ingred.Name)
                     {
-                        return;
+                        return potion;
                     }
                 }
                 potion.Ingredients.Add(ingred);
                 await Context.SaveChangesAsync();
+                return potion;
             }
+            return null;
         }
 
     }
