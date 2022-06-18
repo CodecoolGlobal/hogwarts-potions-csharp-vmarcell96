@@ -57,21 +57,8 @@ namespace HogwartsPotions.Controllers
 
                 if (student == null)
                 {
-                    return NotFound();
+                    return NotFound($"Student with id:{studentId} not found!");
                 }
-
-                //Check if ingredients match any potion
-                //if (!await _potionRepository.CheckIfPotionAlreadyExists(potion))
-                //{
-                //    potion.Status = Models.Enums.BrewingStatus.Discovery;
-                //    var recipe = new Recipe() { Brewer = student, Name = $"{student.Name}'s discovery", Ingredients = potion.Ingredients };
-                //    await _recipeRepository.AddRecipe(recipe);
-                //}
-                //else
-                //{
-                //    potion.Status = Models.Enums.BrewingStatus.Replica;
-                //}
-                //
 
                 if (ModelState.IsValid)
                 {
