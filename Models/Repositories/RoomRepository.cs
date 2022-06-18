@@ -46,6 +46,7 @@ namespace HogwartsPotions.Models.Repositories
         public async Task<List<Room>> GetRoomsForRatOwners()
         {
             return await Context.Rooms.Include(room => room.Residents)
+                              .ThenInclude(s => s.Room)
                               .AsNoTracking()
                               .Where(r => !r.Residents.Any(stu => stu.PetType == PetType.Cat || stu.PetType == PetType.Owl))
                               .ToListAsync();
