@@ -11,6 +11,5 @@ public interface IIngredientRepository
     public Task<Ingredient> GetIngredient(long id);
 
     public Task AddIngredient(Ingredient ingredient);
-    //public Task<bool> CheckIfPotionAlreadyExists(Potion potion);
 
 }
