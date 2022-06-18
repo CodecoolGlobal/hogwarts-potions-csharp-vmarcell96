@@ -13,7 +13,7 @@ namespace HogwartsPotions.Models.Entities
 
         public Student Brewer { get; set; }
 
-        public ICollection<Ingredient> Ingredients { get; set; }
+        public ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
 
         public BrewingStatus Status { get; set; } = BrewingStatus.Brew;
 
