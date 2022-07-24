@@ -156,12 +156,8 @@ namespace HogwartsPotions.Controllers
         {
             try
             {
-                var potion = await _recipeRepository.GetAllRecipesWithPotionIngredients(potionId);
-                if (potion == null)
-                {
-                    return StatusCode(500, $"The potion is ready or there is no potion with this id:{potionId}");
-                }
-                return Ok(potion);
+                var recipeList = await _recipeRepository.GetAllRecipesWithPotionIngredients(potionId);
+                return Ok(recipeList);
             }
             catch (Exception ex)
             {

@@ -29,12 +29,6 @@ namespace HogwartsPotions.Models
             modelBuilder.Entity<Ingredient>().ToTable("Ingredient");
             modelBuilder.Entity<Recipe>().ToTable("Recipe");
             modelBuilder.Entity<Potion>().ToTable("Potion");
-
-            //modelBuilder.Entity<Room>()
-            //    .HasMany(r => r.Residents)
-            //    .WithOne(d => d)
-            //    .HasForeignKey<UserLoginData>(d => d.StudentId)
-            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
